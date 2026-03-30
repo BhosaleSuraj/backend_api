@@ -9,7 +9,7 @@ Route::get('/test', function () {
 });
 Route::get('/users', function () {
     return response()->json([
-        ['id' => 1, 'name' => 'Suraj'],
+        ['id' => 1, 'name' => 'Suraj FINAL'],
         ['id' => 2, 'name' => 'John']
     ]);
 });
