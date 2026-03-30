@@ -7,3 +7,9 @@ Route::get('/test', function () {
         'message' => 'Backend is working 🚀'
     ]);
 });
+Route::get('/users', function () {
+    return response()->json([
+        ['id' => 1, 'name' => 'Suraj'],
+        ['id' => 2, 'name' => 'John']
+    ]);
+});
