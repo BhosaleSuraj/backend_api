@@ -1,9 +1,8 @@
-# Use PHP 8.2 CLI
 FROM php:8.2-cli
 
 WORKDIR /app
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     unzip git curl libzip-dev zip \
     && docker-php-ext-install zip
@@ -11,24 +10,24 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy project
+# Copy project files
 COPY . .
 
-# Install Laravel dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# 🔥 IMPORTANT: create .env if missing
+# Create .env safely
 RUN cp .env.example .env || true
 
-# 🔥 Generate key (important)
-RUN php artisan key:generate
+# Generate key (ignore error if already exists)
+RUN php artisan key:generate || true
 
-# 🔥 Clear caches
-RUN php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan cache:clear
+# Clear cache safely (ignore errors)
+RUN php artisan config:clear || true
+RUN php artisan route:clear || true
+RUN php artisan cache:clear || true
 
-# 🔥 Force rebuild
+# Force rebuild
 RUN echo "build $(date)"
 
 # Permissions
