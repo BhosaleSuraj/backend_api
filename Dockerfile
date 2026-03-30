@@ -15,16 +15,25 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy project files
 COPY . .
 
-# Install dependencies (optimized)
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Clear Laravel caches
+# 🔥 Force rebuild (important for Render cache)
+RUN echo "force rebuild $(date)"
+
+# 🔥 Regenerate autoload (important)
+RUN composer dump-autoload
+
+# 🔥 Clear Laravel caches
 RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan cache:clear
 
-# Expose port (Render uses dynamic PORT)
+# Set permissions (safe)
+RUN chmod -R 777 storage bootstrap/cache
+
+# Expose port
 EXPOSE 10000
 
-# Start Laravel server using Render PORT
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+# Start Laravel using Render PORT
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
